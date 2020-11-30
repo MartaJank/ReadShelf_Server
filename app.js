@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const authRouter = require("./routes/auth");
+const privateRouter = require("./routes/private");
 const upload = require("./routes/file-upload-routes");
 
 // MONGOOSE CONNECTION
@@ -39,6 +40,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/auth", authRouter);
+app.use("/private", privateRouter);
 app.use("/", upload);
 
 // ERROR HANDLING

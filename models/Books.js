@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const Books = new Schema({
+const booksSchema = new Schema({
   id: String,
   title: String,
   authors: Array,
@@ -28,6 +28,6 @@ const Books = new Schema({
   canonicalVolumeLink: String,
 });
 
-const Books = mongoose.model("Books", Books);
+const Books = mongoose.model("Books", booksSchema);
 
 module.exports = Books;
