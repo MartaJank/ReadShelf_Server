@@ -18,13 +18,17 @@ router.post("/signup", async (req, res, next) => {
 
   try {
     const emailExists = await User.findOne({ email }, "email");
-    
+
     if (emailExists) {
       return res.status(400).json({ errorMessage: "Email already exists!" });
     } else {
       const salt = bcrypt.genSaltSync(saltRounds);
       const hashPass = bcrypt.hashSync(password, salt);
-      const newUser = await User.create({ username, email, password: hashPass });
+      const newUser = await User.create({
+        username,
+        email,
+        password: hashPass,
+      });
 
       const payload = { email };
       const token = jwt.sign(payload, process.env.SECRET_SESSION, {
@@ -45,8 +49,7 @@ router.post("/login", async function (req, res) {
 
     if (!user) {
       return res.status(404).json({ errorMessage: "User does not exist!" });
-    }
-    else if (bcrypt.compareSync(password, user.password)) {
+    } else if (bcrypt.compareSync(password, user.password)) {
       const payload = { email };
       const token = jwt.sign(payload, process.env.SECRET_SESSION, {
         expiresIn: "1h",
@@ -67,12 +70,12 @@ router.get("/logout", withAuth, function (req, res) {
 
 // GET '/me'
 router.get("/me", withAuth, async function (req, res) {
-    try {
-      const user = await User.findOne({ email: req.email }).select("-password");
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
-  });
+  try {
+    const user = await User.findOne({ email: req.email }).select("-password");
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
