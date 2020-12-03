@@ -65,7 +65,6 @@ router.get("/searchBooks/books", (req, res, next) => {
 });
 
 router.post("/books/:userId/push/:name", withAuth, (req, res, next) => {
-  console.log("holaaaa", req.body.volumeInfo);
   const { name } = req.params;
   const { id } = req.body;
   const {
