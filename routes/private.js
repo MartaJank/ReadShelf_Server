@@ -26,10 +26,12 @@ router.get("/profile/:userId", withAuth, (req, res, next) => {
 
 router.patch("/profile/:userId/edit", withAuth, (req, res, next) => {
   let defaultPic;
-  let { email, username, imageUrl } = req.body;
+  let { email, username } = req.body;
 
   User.findById(req.params.userId)
     .then((user) => {
+        console.log('la imagen que subo', req.body.imageUrl);
+        console.log('la imagen actual:', user.imageUrl)
       req.body.imageUrl
         ? (defaultPic = req.body.imageUrl)
         : (defaultPic = user.imageUrl);
