@@ -12,7 +12,7 @@ const Books = require("../models/Books");
 const withAuth = require("../helpers/middleware");
 
 //PROFILE
-/* router.get("/profile/:userId", withAuth, (req, res, next) => {
+router.get("/profile/:userId", withAuth, (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       console.log("response:", user.email);
@@ -22,7 +22,7 @@ const withAuth = require("../helpers/middleware");
     .catch((err) => {
       res.json(err);
     });
-}); */
+});
 
 router.patch("/profile/:userId/edit", withAuth, (req, res, next) => {
   let defaultPic;
@@ -157,5 +157,21 @@ router.delete("/books/:userId/pull/:name/:bookId", (req, res, next) => {
       res.json(err);
     });
 });
+
+//LISTS
+router.get("/user/info/:userId", withAuth, (req, res, next) => {
+  const { userId } = req.params;
+  User.findById(userId)
+    .then((data) => {
+      console.log(data);
+      res.json(data).status(200);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500);
+    });
+});
+
+//Create a route to move books form one list to another
 
 module.exports = router;
