@@ -161,12 +161,12 @@ router.delete("/books/:userId/pull/:name/:bookId", (req, res, next) => {
 });
 
 //LISTS
-router.get("/user/info/:userId", withAuth, (req, res, next) => {
+router.get("/user/info/:userId", (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((data) => {
       console.log(data);
-      res.json(data).status(200);
+      res.status(200).json(data);
     })
     .catch((err) => {
       console.error(err);
