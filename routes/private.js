@@ -30,8 +30,8 @@ router.patch("/profile/:userId/edit", withAuth, (req, res, next) => {
 
   User.findById(req.params.userId)
     .then((user) => {
-        console.log('la imagen que subo', req.body.imageUrl);
-        console.log('la imagen actual:', user.imageUrl)
+      console.log("la imagen que subo", req.body.imageUrl);
+      console.log("la imagen actual:", user.imageUrl);
       req.body.imageUrl
         ? (defaultPic = req.body.imageUrl)
         : (defaultPic = user.imageUrl);
@@ -175,5 +175,40 @@ router.get("/user/info/:userId", (req, res, next) => {
 });
 
 //Create a route to move books form one list to another
+
+//CLUBS
+router.post("/book-clubs/:userId/add", withAuth, (req, res, next) => {
+  console.log(req.body.title);
+  Club.create({
+    title: req.body.title,
+    description: req.body.description,
+    currentBookTitle: req.body.currentBookTitle,
+    meetingDate: req.body.meetingDate,
+    meetingHour: req.body.meetingHour,
+    meetingLink: req.body.meetingLink,
+    creator: req.params.userId,
+  })
+    .then((response) => {
+      console.log("response", response);
+      User.findByIdAndUpdate(
+        req.params.userId,
+        {
+          $push: { createdBookClubs: response._id },
+          $set: { isClubCreator: true },
+        },
+        { new: true }
+      )
+        .then((theResponse) => {
+          req.params.userId = theResponse;
+          res.json(theResponse);
+        })
+        .catch((err) => {
+          res.json(err);
+        });
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
 
 module.exports = router;
