@@ -140,4 +140,22 @@ router.post("/books/:userId/push/:name", withAuth, (req, res, next) => {
     });
 });
 
+router.delete("/books/:userId/pull/:name/:bookId", (req, res, next) => {
+  //const { id } = req.body;
+  const { name, bookId } = req.params;
+  console.log(req.params.bookId, ": book Id");
+  User.findByIdAndUpdate(
+    req.params.userId,
+    { $pull: { [name]: { id: bookId } } },
+    { new: true }
+  )
+    .then((theResponse) => {
+      console.log("the Response from delete from list", theResponse);
+      res.json(theResponse);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
 module.exports = router;
