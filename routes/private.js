@@ -286,16 +286,6 @@ router.post("/join-club/:userId/:clubId", (req, res, next) => {
 });
 
 router.patch("/book-clubs/:userId/edit/:clubId", withAuth, (req, res, next) => {
-  let defaultPic;
-  let {
-    title,
-    description,
-    currentBookTitle,
-    meetingDate,
-    meetingHour,
-    meetingLink,
-  } = req.body;
-
   User.findById(req.params.userId).then(async (user) => {
     const userClubs = user.createdBookClubs;
     if (!userClubs.includes(req.params.clubId)) {
@@ -303,11 +293,22 @@ router.patch("/book-clubs/:userId/edit/:clubId", withAuth, (req, res, next) => {
     } else {
       return Club.findById(req.params.clubId)
         .then((club) => {
-          console.log("la imagen que subo", req.body.imageUrl);
-          console.log("la imagen actual:", club.imageUrl);
+          let defaultPic;
+          let {
+            title,
+            description,
+            currentBookTitle,
+            meetingDate,
+            meetingHour,
+            meetingLink,
+          } = req.body;
+
           req.body.imageUrl
             ? (defaultPic = req.body.imageUrl)
             : (defaultPic = club.imageUrl);
+
+          console.log("la imagen que subo", req.body.imageUrl);
+          console.log("la imagen actual:", club.imageUrl);
 
           const updatedClub = {
             title,
