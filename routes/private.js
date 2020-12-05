@@ -177,6 +177,58 @@ router.get("/user/info/:userId", (req, res, next) => {
 //Create a route to move books form one list to another
 
 //CLUBS
+router.get("/book-clubs", (req, res, next) => {
+  Club.find()
+    .then((allClubs) => {
+      res.json(allClubs);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
+router.get("/book-clubs/:userId/joined", withAuth, (req, res, next) => {
+  User.findById(req.params.userId)
+    .populate("joinedBookClubs")
+    .then((user) => {
+      res.json(user.joinedBookClubs);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
+router.get("/book-clubs/:userId/created", withAuth, (req, res, next) => {
+  User.findById(req.params.userId)
+    .populate("createdBookClubs")
+    .then((user) => {
+      res.json(user.createdBookClubs);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
+router.get("/book-clubs/:clubId", withAuth, (req, res, next) => {
+  Club.findById(req.params.clubId)
+    .then((theClub) => {
+      res.json(theClub);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
+router.get("/book-clubs/created/one/:clubId", withAuth, (req, res, next) => {
+  Club.findById(req.params.clubId)
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
 router.post("/book-clubs/:userId/add", withAuth, (req, res, next) => {
   console.log(req.body.title);
   Club.create({
@@ -209,6 +261,57 @@ router.post("/book-clubs/:userId/add", withAuth, (req, res, next) => {
     .catch((err) => {
       res.json(err);
     });
+});
+
+router.patch("/book-clubs/:userId/edit/:clubId", withAuth, (req, res, next) => {
+  let defaultPic;
+  let {
+    title,
+    description,
+    currentBookTitle,
+    meetingDate,
+    meetingHour,
+    meetingLink,
+  } = req.body;
+  User.findById(req.params.userId).then(async (user) => {
+    const userClubs = user.createdBookClubs;
+    if (!userClubs.includes(req.params.clubId)) {
+      next(createError(401));
+    } else {
+      return Club.findById(req.params.clubId)
+        .then((club) => {
+          console.log("la imagen que subo", req.body.imageUrl);
+          console.log("la imagen actual:", club.imageUrl);
+          req.body.imageUrl
+            ? (defaultPic = req.body.imageUrl)
+            : (defaultPic = club.imageUrl);
+
+          const updatedClub = {
+            title,
+            description,
+            currentBookTitle,
+            meetingDate,
+            meetingHour,
+            meetingLink,
+            imageUrl: defaultPic,
+          };
+
+          const pr = Club.update({ _id: req.params.clubId }, updatedClub, {
+            new: true,
+          });
+          return pr;
+        })
+
+        .then(() => {
+          res.json({
+            message: `Club with ${req.params.clubId} is updated successfully.`,
+          });
+        })
+        .catch((err) => {
+          res.json(err);
+        });
+    }
+  });
 });
 
 module.exports = router;
