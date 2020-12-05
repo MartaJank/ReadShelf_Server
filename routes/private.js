@@ -263,6 +263,28 @@ router.post("/book-clubs/:userId/add", withAuth, (req, res, next) => {
     });
 });
 
+router.post("/join-club/:userId/:clubId", (req, res, next) => {
+  Club.findById(req.params.clubId)
+    .then((response) => {
+      console.log("response", response);
+      console.log("club-user", req.params.userId);
+      User.findByIdAndUpdate(
+        req.params.userId,
+        { $push: { joinedBookClubs: response._id } },
+        { new: true }
+      )
+        .then((theResponse) => {
+          res.json(theResponse);
+        })
+        .catch((err) => {
+          res.json(err);
+        });
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
 router.patch("/book-clubs/:userId/edit/:clubId", withAuth, (req, res, next) => {
   let defaultPic;
   let {
@@ -273,6 +295,7 @@ router.patch("/book-clubs/:userId/edit/:clubId", withAuth, (req, res, next) => {
     meetingHour,
     meetingLink,
   } = req.body;
+
   User.findById(req.params.userId).then(async (user) => {
     const userClubs = user.createdBookClubs;
     if (!userClubs.includes(req.params.clubId)) {
@@ -312,6 +335,64 @@ router.patch("/book-clubs/:userId/edit/:clubId", withAuth, (req, res, next) => {
         });
     }
   });
+});
+
+router.delete("/book-clubs/:userId/delete/:clubId", (req, res, next) => {
+  Club.findByIdAndRemove(req.params.clubId)
+    .then((response) => {
+      console.log("response", response);
+      User.findByIdAndUpdate(
+        req.params.userId,
+        { $pull: { createdBookClubs: req.params.clubId } },
+        { new: true }
+      )
+        .then((user) => {
+          let query;
+          if (user.createdBookClubs.length > 0) {
+            query = { isClubCreator: true };
+          } else {
+            query = { isClubCreator: false };
+          }
+
+          User.findByIdAndUpdate(
+            req.params.userId,
+            { $set: query },
+            { new: true }
+          )
+            .then((theResponse) => {
+              res.json(theResponse);
+            })
+            .catch((err) => {
+              res.json(err);
+            });
+        })
+        .catch((err) => {
+          res.json(err);
+        });
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
+router.delete("/unjoin/:userId/:clubId", withAuth, (req, res, next) => {
+  Club.findById(req.params.clubId)
+    .then((response) => {
+      User.findByIdAndUpdate(
+        req.params.userId,
+        { $pull: { joinedBookClubs: response._id } },
+        { new: true }
+      )
+        .then((theResponse) => {
+          res.json(theResponse);
+        })
+        .catch((err) => {
+          res.json(err);
+        });
+    })
+    .catch((err) => {
+      res.json(err);
+    });
 });
 
 module.exports = router;
