@@ -12,7 +12,7 @@ const Books = require("../models/Books");
 const withAuth = require("../helpers/middleware");
 
 //PROFILE
-router.get("/profile/:userId", withAuth, (req, res, next) => {
+router.get("/profile/:userId", (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       console.log("response:", user.email);
