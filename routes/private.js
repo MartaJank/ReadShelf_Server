@@ -35,7 +35,7 @@ router.patch("/profile/:userId/edit", withAuth, (req, res, next) => {
 
       const updatedUser = { email, username, imageUrl: defaultPic };
 
-      const pr = User.findByIdAndUpdate(req.params.userId, updatedUser, {
+      const pr = User.update({ _id: req.params.userId }, updatedUser, {
         new: true,
       });
       res.status(200).json(pr);
