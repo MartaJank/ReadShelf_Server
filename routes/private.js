@@ -25,23 +25,20 @@ router.get("/profile/:userId", withAuth, (req, res, next) => {
 });
 
 router.patch("/profile/:userId/edit", withAuth, (req, res, next) => {
-  let defaultPic;
-  let { email, username } = req.body;
+  let { email, username, imageUrl } = req.body;
 
   User.findById(req.params.userId)
     .then((user) => {
-      console.log("la imagen que subo", req.body.imageUrl);
+      console.log("la imagen que subo", imageUrl);
       console.log("la imagen actual:", user.imageUrl);
-      req.body.imageUrl
-        ? (defaultPic = req.body.imageUrl)
-        : (defaultPic = user.imageUrl);
+      let defaultPic = imageUrl ? imageUrl : user.imageUrl;
 
       const updatedUser = { email, username, imageUrl: defaultPic };
 
-      const pr = User.update({ _id: req.params.userId }, updatedUser, {
+      const pr = User.findByIdAndUpdate(req.params.userId, updatedUser, {
         new: true,
       });
-      return pr;
+      res.status(200).json(pr);
     })
     .then(() => {
       res.json({
