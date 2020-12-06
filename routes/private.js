@@ -24,22 +24,22 @@ router.get("/profile/:userId", withAuth, (req, res, next) => {
     });
 });
 
-router.patch("/profile/:userId/edit", withAuth, (req, res, next) => {
-  let { email, username, imageUrl } = req.body;
+router.post("/profile/:userId/edit", withAuth, (req, res, next) => {
+  let { email, username, imageUrl, user } = req.body;
 
-  User.findById(req.params.userId)
-    .then((user) => {
+  /* User.findById(req.params.userId)
+    .then((user) => { */
       console.log("la imagen que subo", imageUrl);
       console.log("la imagen actual:", user.imageUrl);
       let defaultPic = imageUrl ? imageUrl : user.imageUrl;
-
+        console.log(req.body, "req.body", req.params);
       //const updatedUser = { email, username, imageUrl: defaultPic };
 
-      const pr = User.findByIdAndUpdate(req.params.userId, { email: email, username: username, imageUrl: defaultPic }, {
+      User.findByIdAndUpdate(req.params.userId, { email: email, username: username, imageUrl: defaultPic }, {
         new: true,
-      });
-      res.status(200).json(pr);
-    })
+      })
+      
+   /*  }) */
     .then(() => {
       res.json({
         message: `User with ${req.params.userId} is updated successfully.`,
