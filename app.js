@@ -29,14 +29,14 @@ var app = express();
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:3000", "https://readshelf.herokuapp.com"],
+    origin: ["http://localhost:3000", "https://readshelf-server.herokuapp.com"],
   })
 );
 
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://readshelf.herokuapp.com",
+    "https://readshelf-server.herokuapp.com",
     "http://localhost:3000"
   );
   res.setHeader(
