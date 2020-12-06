@@ -33,6 +33,24 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://readshelf.herokuapp.com",
+    "http://localhost:3000"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, PUT, POST OPTIONS, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", true);
+  next();
+});
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
